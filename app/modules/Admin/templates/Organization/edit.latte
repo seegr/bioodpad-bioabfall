@@ -1,0 +1,14 @@
+{layout '../@layoutSginedIn.latte'}
+{define metaTitle}Organizace{/define}
+
+{block content}
+    {control organizationForm}
+
+    <a href="#map-modal" class="uk-button uk-button-default uk-margin-right" uk-toggle>Test modal</a>
+
+    <div id="map-modal" uk-modal="stack: true">
+        <div class="uk-modal-dialog uk-modal-body">
+            mapka...
+        </div>
+    </div>
+{/block}

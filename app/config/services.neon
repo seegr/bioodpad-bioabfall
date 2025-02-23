@@ -1,0 +1,18 @@
+services:
+    - App\Services\Authenticator
+    - App\Services\Authorizator::create
+    - App\Services\MailService(%contact%)
+    - App\Services\ParamService(%contact%, %social%, %links%, %keys%, %settings%)
+    - App\Services\TusService(%tempDir%)
+    - App\Services\LocaleService
+    - App\Services\RecaptchaService
+    - App\Services\FileStorage(%wwwDir%, %storage%)
+    - App\Filter\FileFilter(%storage%)
+    - App\Services\ViteAssets(%vite.port%, %wwwDir%, %vite.isDockerized%)
+    - App\Services\FacebookService
+
+    router: App\Router\RouterFactory::createRouter
+    latte.templateFactory: App\Templates\TemplateFactory
+    latte.latteFactory:
+        setup:
+            - setLoader(App\Templates\ComponentFileLoader())

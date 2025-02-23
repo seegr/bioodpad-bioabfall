@@ -1,0 +1,144 @@
+{varType string $type}
+{varType object $item}
+{varType bool $categories}
+
+{default $type = 'article'}
+{default $categories = false}
+
+{var $linkClass = 'text-green-dark hover:text-black transition'}
+
+{if $type === 'article' && $item->org}
+    {var $org = $item->ref('org')}
+    {var $orgLogo = $org->logo}
+{/if}
+
+<div class="article-box h-full relative">
+    <div class="relative h-full bg-white border border-green-light/40 rounded overflow-hidden hover:shadow-xl transition-all">
+        {switch $type}
+            {case 'article'}
+                {var $image = ($item->image_thumb ?? $item->image|image)}
+            {case 'org'}
+                {var $image = ($item->logo|image)}
+            {case 'event'}
+                {var $image = $item->image}
+        {/switch}
+
+        <div n:class="
+                'relative aspect-16/9 w-full overflow-hidden',
+                $type !== 'org' ? 'bg-black'
+            "
+            {if $type !== 'event'}
+                data-item-modal-id="{$item->id}"
+                data-item-modal-type="{$type}"
+            {/if}
+        >
+            <img n:if="$image" src="{$image}"
+                 alt="{$item->title}"
+                 n:class="
+                     $type === 'article' && $item->{App\Model\ArticleRepository::COLUMN_PRIMARY_IMAGE_FIT} ? 'absolute object-cover size-full' : 'size-full object-contain',
+                     $type === 'org' ? 'absolute-center object-contain size-[70%]',
+                     $type === 'event' ? 'absolute-center object-cover size-full',
+
+                 "
+            >
+            <div n:if="$categories" class="absolute bottom-8px left-12px flex flex-wrap gap-6px text-[80%]">
+                {foreach $item->related('article_has_category') as $category}
+                    {var $cat = $category->ref('category_id')}
+                    <a class="bg-green-lighter rounded-[2px] px-6px hover:bg-white transition-all"
+                        n:href="Category:articles, $cat->slug"
+                    >
+                        {$cat->title}
+                    </a>
+                {/foreach}
+            </div>
+            <img
+                n:if="!empty($orgLogo)"
+                src="{$orgLogo|image}"
+                class="absolute top-12px right-24px w-[50px]"
+            >
+        </div>
+        <div class="px-18px pt-12px pb-48px">
+            <div n:if="$type === 'article'" class="text-12px opacity-50">
+                {$item->date_start|date, App\Services\LocaleService::DATE_FORMAT}
+            </div>
+            <div n:class="pb-12px, $type === 'article' ? 'min-h-[4rem]'">
+                <div
+                    n:tag="$type === 'event' ? 'a' : 'div'"
+                    n:attr="
+                        href: $type === 'event' ? $item->link : null,
+                        target: $type === 'event' ? '_blank' : null
+                    "
+                    n:class="text-green-dark, 'font-bold'"
+                    {if $type !== 'event'}
+                        data-item-modal-id="{$item->id}"
+                        data-item-modal-type="{$type}"
+                    {/if}
+                >
+                    {$item->title}
+                </div>
+                <div n:if="$type === 'article'" class="flex flex-wrap gap-4px pt-4px">
+                    {foreach $item->related('article_has_tag') as $tag}
+                        <div class="flex items-center text-[12px] bg-green-light text-white rounded-[8px] px-6px py-4px">
+                            {$tag->ref('tag_id')->title}
+                        </div>
+                    {/foreach}
+                </div>
+            </div>
+            <div n:if="$type === 'org'">
+                <div class="pb-12px">
+                    <span>
+                        {$item->street}, {$item->zip} {$item->city}
+                    </span>
+                </div>
+                <div n:if="$item->email">
+                    <a
+                        href="mailto:{$item->email}"
+                        class="text-green-dark"
+                    >
+                        {$item->email}
+                    </a>
+                </div>
+                <div n:if="$item->phone">
+                    {var $nums = ($item->phone|explode, ",")}
+                    {foreach $nums as $num}
+                        {var $num = ($num|strip)}
+                        <a
+                            href="tel:{$num}"
+                            class="text-green-dark"
+                        >
+                            {$num}
+                        </a>
+                    {/foreach}
+                </div>
+            </div>
+			<div n:if="$type === 'event'"
+				class="text-14px text-brown-dark font-bold pb-12px"
+			>
+				<span>{$item->start|date, 'j.n.Y H:i'}</span>
+				<span n:if="$item->end"> - {$item->end|date, 'j.n.Y H:i'}</span>
+			</div>
+            <div class="max-h-[10rem] overflow-y-auto pr-12px">
+                {$item->text|noescape|removeHyperlinks}
+            </div>
+        </div>
+        <div n:if="!empty($item->link)" class="absolute bottom-12px right-18px">
+            {if $type === 'article'}
+                {include .Button
+                    variant: App\Templates\Types\Variant::SECONDARY,
+                    link: $item->link,
+                    text: 'Zdroj'
+                }
+            {elseif $type === 'org'}
+                {include .Button
+                    link: $item->link,
+                    text: 'Web'
+                }
+            {elseif $type === 'event'}
+                {include .Button
+                    link: $item->link,
+                    text: 'Facebook'
+                }
+            {/if}
+        </div>
+    </div>
+</div>

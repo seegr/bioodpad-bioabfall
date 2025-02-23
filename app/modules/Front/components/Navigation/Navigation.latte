@@ -1,0 +1,22 @@
+<nav class="fixed z-[100] w-full h-[60px] text-18px backdrop-blur drop-shadow-md transition-all"
+     :class="pageScrolled ? 'bg-green/90 text-white' : 'bg-green-dark text-white'"
+>
+    <div class="container-desktop flex h-full justify-between items-center py-12px font-secondary">
+        <a n:href="Homepage:default" class="flex items-center gap-x-24px group">
+            <div>
+                <img
+                    src="dist/front/images/logo.png"
+                    alt="Logo"
+                    class="block h-[40px]"
+                >
+            </div>
+            <span class="group-hover:text-black/80 transition-all">Ekovýchova Libereckého kraje</span>
+        </a>
+        <a class="block size-24px hover:text-green-darker transition-all"
+           href="https://www.facebook.com/ekovychovalk"
+           target="_blank"
+        >
+            {include .Icon key: 'facebook'}
+        </a>
+    </div>
+</nav>

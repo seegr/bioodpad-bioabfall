@@ -1,0 +1,52 @@
+.calendar-component {
+  @apply h-full text-14px select-none;
+
+  table {
+    @apply w-full h-full border-separate;
+
+    td {
+      @apply border-none text-center;
+    }
+  }
+
+  .nav td select {
+    @apply bg-none text-black;
+  }
+
+  .days-header {
+    td {
+      @apply text-black font-bold;
+    }
+  }
+
+  .days {
+    tr {
+      @apply h-20px;
+    }
+
+    td {
+      @apply h-20px text-12px;
+
+      &.diff-month {
+        @apply opacity-30;
+      }
+
+      a {
+        @apply flex h-20px w-full justify-center items-center;
+
+        &.has-event {
+          @apply bg-white/30;
+        }
+        &.no-event {
+          @apply bg-white/5;
+        }
+      }
+    }
+  }
+
+  &.hidden-events {
+    .events-wrap {
+      @apply hidden;
+    }
+  }
+}

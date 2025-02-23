@@ -1,0 +1,17 @@
+app/config/database.local.neon
+app/config/mail.local.neon
+app/config/vite.local.neon
+.idea
+bower_components
+node_modules
+vendor
+www/upload
+www/assets/*
+!www/assets/static
+www/assets/static/*
+!www/assets/static/original
+www/dist
+.env
+.docker
+.DS_Store
+fbtoken.txt

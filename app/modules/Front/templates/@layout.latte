@@ -1,0 +1,53 @@
+{templateType App\FrontModule\Types\BaseTemplate}
+
+<!DOCTYPE html>
+<html lang="{$locale}">
+<head>
+    <title>{ifset metaTitle}{include block metaTitle|stripHtml} | {/ifset}{$contact->title}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="{ifset metaDescription}{include block metaDescription|stripHtml|trim}{/ifset}">
+    <meta name="copyright" content="© {php date('Y')}">
+    <meta name="robots" content="index,follow">
+
+    {$viteAssets->printFrontTags("js/index.js")}
+
+    {if !stripos($presenter->getName(), 'error')}
+        <meta property="og:site_name" content="Ekovýchova LK" />
+        <meta property="og:title" content="{ifset metaTitle}{include block metaTitle|stripHtml}{/ifset}">
+        <meta property="og:description" content="{ifset metaDescription}{include block metaDescription|stripHtml|trim|truncate:160}{/ifset}">
+        <meta property="og:url" content="{link '//this'}">
+        <meta property="og:type" content="website">
+        <meta property="og:image" content="{$baseUrl}/dist/front/images/og_image_default.png" />
+        <meta property="og:image:secure_url" content="{$baseUrl}/dist/front/images/og_image_default.png" /> {*// https *}
+        <meta property="og:image:type" content="image/png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:locale" content="{$locale}" />
+    {/if}
+
+    <link rel="shortcut icon" href="{$basePath}/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{$basePath}/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0F-i4YCwfSQswWrkLJMhhZIX3S_KViwg"></script>
+</head>
+
+<body class="font-primary min-h-screen"
+      x-data="{ pageScrolled: false, allowScroll: true }"
+      :class=" !allowScroll && 'overflow-hidden' "
+      @scroll.window=" pageScrolled = window.scrollY >= 10 "
+>
+    {include .FlashMessages flashes: $flashes}
+
+    {include .Navigation}
+    <main class="w-full">
+        {include content}
+    </main>
+
+    {include .Footer}
+    {include .ItemModal}
+</body>
+</html>

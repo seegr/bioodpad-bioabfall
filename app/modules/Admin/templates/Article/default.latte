@@ -1,0 +1,8 @@
+{layout '../@layoutSginedIn.latte'}
+{define metaTitle}Články{/define}
+
+{block content}
+	{include '../../components/DefaultHeader/DefaultHeader.latte', key: 'Article'}
+	<a n:href="validateArticles" class="uk-button uk-button-default uk-button-small">Validovat články</a>
+	{control grid}
+{/block}

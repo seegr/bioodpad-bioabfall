@@ -1,0 +1,13 @@
+{varType string $slug}
+
+{default $slug = null}
+
+{var $image = $slug ? "$slug.webp" : 'hero-bg.jpg'}
+
+<img
+    src="dist/front/images/{$image}"
+    class="absolute-fit z-[-2] object-cover object-left-center"
+>
+<div class="absolute-fit z-[-1]"
+     style="background: linear-gradient(0deg, rgba(95,111,82,0) 70%, rgba(95,111,82,1) 100%);"
+></div>

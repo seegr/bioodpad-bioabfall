@@ -1,0 +1,81 @@
+{block content}
+
+<section class="relative">
+    {include .HeroImage slug: 'akce'}
+    <div class="container-desktop pt-[calc(60px+32px)] pb-48px">
+        <div class="flex">
+            <div>
+                <h1 class="font-bold text-white text-42px"
+                    style="text-shadow: 0 0 2px black"
+                >{$heading}</h1>
+
+{*                <div class="flex gap-12px">*}
+{*                    <form*}
+{*                            n:name="filterForm"*}
+{*                            class="w-[400px] text-18px pt-12px select-none"*}
+{*                            x-data="ajax({})"*}
+{*                            @submit.prevent="request()"*}
+{*                    >*}
+{*                        <div n:if="$form['tags']->getItems()"*}
+{*                                class="tags flex gap-12px"*}
+{*                        >*}
+{*                            <div n:foreach="$form['tags']->getItems() as $key => $value"*}
+{*                            >*}
+{*                                <input n:name="tags:$key" class="peer hidden">*}
+{*                                <label*}
+{*                                        n:name="tags:$key"*}
+{*                                        class="inline-block bg-green-lighter text-black px-16px py-12px rounded cursor-pointer transition-colors peer-checked:bg-green-dark peer-checked:text-white hover:bg-white/50"*}
+{*                                >*}
+{*                                    {$value}*}
+{*                                </label>*}
+{*                            </div>*}
+{*                        </div>*}
+
+{*                        <div class="pt-12px">*}
+{*                            <input*}
+{*                                    n:name="text"*}
+{*                                    placeholder="Vyhledat v textu..."*}
+{*                                    class="rounded h-48px w-full px-12px appearance-none outline-none bg-green-lighter focus:bg-white placeholder:text-black/80"*}
+{*                                    autocomplete="off"*}
+{*                            >*}
+{*                        </div>*}
+{*                    </form>*}
+{*                    <div n:snippet="reset"*}
+{*                            class="flex items-end"*}
+{*                    >*}
+{*                        <a*}
+{*                                n:if="$reset"*}
+{*                                n:href="resetFilter!"*}
+{*                                class="inline-block flex items-center bg-orange rounded h-48px px-12px"*}
+{*                        >Resetovat filtr</a>*}
+{*                    </div>*}
+{*                </div>*}
+{*            </div>*}
+            <div
+                    n:ifset="$text"
+            >
+                <div class="flex">
+                    <div class="bg-green-darker/70 text-18px rounded text-white px-24px py-12px">
+                        {$text}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="container-desktop">
+        <div class="grid grid-cols-4 gap-12px py-32px"
+                n:snippet="articles"
+        >
+            {foreach $events as $event}
+                {dump $event}
+                {include .ArticleBox
+                    type: 'event',
+                    item: $event
+                }
+            {/foreach}
+        </div>
+    </div>
+</section>

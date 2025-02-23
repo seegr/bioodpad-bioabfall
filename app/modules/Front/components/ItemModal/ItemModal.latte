@@ -1,0 +1,40 @@
+{varType object $item}
+{varType string $btnText}
+{varType bool $btn}
+
+{default $btnText = null}
+{default $btn = false}
+
+<div class="item-modal-component fixed z-[1000] top-0 left-0 flex items-center justify-center w-full h-screen backdrop-blur transition-all invisible opacity-0 scale-90 px-8px md:px-0"
+     data-fetch-url="{$presenter->link('//getArticleData!')}"
+     data-base-url="{$baseUrl}"
+>
+    <div class="relative w-full tablet:max-w-[600px] h-[calc(100vh-48px)] bg-white drop-shadow-md rounded overflow-y-auto">
+        <div class="relative">
+            <div class="item-image relative w-full hidden"></div>
+            <div class="px-12px tablet:px-64px">
+                <div class="py-24px">
+                    <div>
+                        <div class="item-title text-24px font-bold pb-12px"></div>
+                        <div class="item-link">
+                            {include .Button
+                            variant: App\Templates\Types\Variant::SECONDARY,
+                            text: 'Jít na stránku',
+                            link: '#',
+                            icon: 'caret-right',
+                            newTab: true
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="absolute top-12px right-24px bg-white/80 rounded p-8px">
+                    <div class="btn-close flex items-center font-bold leading-none cursor-pointer hover:opacity-60 overflow-hidden size-16px">
+                        {include .Icon key: 'x'}
+                    </div>
+                </div>
+                <div class="item-text pb-48px"></div>
+            </div>
+        </div>
+
+    </div>
+</div>

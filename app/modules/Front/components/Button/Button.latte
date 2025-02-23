@@ -1,0 +1,35 @@
+{varType string $text}
+{varType string $link}
+{varType bool $newTab}
+{varType string $icon}
+{varType App\Templates\Types\Size $size}
+{varType App\Templates\Types\Variant $variant}
+
+{default $link = null}
+{default $newTab = true}
+{default $icon = null}
+{default $variant = App\Templates\Types\Variant::PRIMARY}
+{default $size = App\Templates\Types\Size::MD}
+
+<div
+    n:class="
+        'button-component',
+        'rounded-4px transition',
+        $variant === App\Templates\Types\Variant::PRIMARY ? 'bg-green hover:bg-green/80 text-white',
+        $variant === App\Templates\Types\Variant::SECONDARY ? 'bg-green/20 hover:bg-green/80 text-green hover:text-black',
+        $size === App\Templates\Types\Size::MD ? 'py-4px px-8px',
+        $size === App\Templates\Types\Size::SM ? 'py-2px px-6px text-14px',
+    "
+    n:tag="$link ? 'a' : 'div'"
+    n:attr="[
+        href => $link,
+        target => $newTab ? '_blank'
+    ]"
+>
+    {$text}
+    <span n:if="$icon"
+        class="inline-flex size-12px"
+    >
+        {include .Icon key: $icon}
+    </span>
+</div>

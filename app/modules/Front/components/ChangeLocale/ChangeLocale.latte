@@ -1,0 +1,15 @@
+{templateType App\FrontModule\Components\ChangeLocaleTemplate}
+
+<nav
+        class="flex flex-nowrap gap-4 uppercase ml-auto px-10 md:ml-0"
+        n:inner-foreach="$localeNames as $localeKey => $name"
+>
+    <a
+        n:href="changeLocale! $localeKey"
+        n:class="$locale === $localeKey ? 'font-bold'"
+        title="{_ChangeLocale.switchTo, [lang => $name]}"
+        lang="{$localeKey}"
+    >
+        {$name}
+    </a>
+</nav>

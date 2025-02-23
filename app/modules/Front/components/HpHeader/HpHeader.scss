@@ -1,0 +1,47 @@
+.hp-header {
+  .box-item {
+    perspective: 1000px;
+
+
+    @media (min-width: 1280px) {
+      &:hover .flip-card {
+        transform: rotateY(180deg);
+      }
+    }
+
+    .flip-card {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+
+      .front-card {
+        z-index: 1;
+        transform: rotateY(0deg);
+      }
+      .back-card {
+        transform: rotateY(180deg);
+      }
+
+      .front-card,
+      .back-card {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+      }
+
+      .bg-brown-gradient {
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+      }
+    }
+  }
+}

@@ -1,0 +1,141 @@
+{import "blocks.latte"}
+
+
+<div n:snippet="calendar"
+	class="w-full"
+>
+	<div n:snippet="month" class="flex">
+			<div class="pr-12px">
+				<a
+					n:href="changeDate!, year => $Date->tYear, month => $Date->tMonth"
+					n:class="
+						today-btn,
+						$control->getElementClass(today-btn) ? $control->getElementClass(today-btn) : 'btn btn-sm btn-success',
+						d-block,
+						'hover:opacity-80'
+					"
+					data-loader=".m-calendar tbody"
+					x-data="ajax"
+					@click.prevent="request()"
+				>
+					<div class="inline-block size-14px">
+						{include .Icon key: 'home'}
+					</div>
+				</a>
+			</div>
+			<div class="flex w-full justify-between items-center">
+				<div>
+					<a
+						n:class="
+							d-block,
+							$control->getElementClass(month-btn) ? $control->getElementClass(month-btn) : 'btn btn-sm btn-primary',
+							'hover:opacity-80'
+						"
+						data-loader=".m-calendar"
+						n:href="changeDate!, year => $Date->prevMonthYear, month => $Date->prevMonth"
+						x-data="ajax"
+						@click.prevent="request()"
+					>
+						<div class="size-14px rotate-180">
+							{include .Icon key: 'caret-right'}
+						</div>
+					</a>
+				</div>
+				<div class="text-14px">
+					{_"general.datetime.month.{$Date->month}"}
+					{$Date->year}
+				</div>
+				<div>
+					<a
+						n:class="
+							d-block,
+							$control->getElementClass(month-btn) ? $control->getElementClass(month-btn) : 'btn btn-sm btn-primary',
+							'hover:opacity-80'
+						"
+						data-loader=".m-calendar"
+						n:href="changeDate!, year => $Date->nextMonthYear, month => $Date->nextMonth"
+						x-data="ajax"
+						@click.prevent="request()"
+					>
+						<div class="d-block size-14px">
+							{include .Icon key: 'caret-right'}
+						</div>
+					</a>
+				</div>
+			</div>
+	</div>
+
+	<div n:class="calendar-component, m-calendar, month, 'dayLayout-' . $dayLayout, 'size-' . $layoutSize, $control->showEvents ? 'show-events' : 'hidden-events'" data-year="{$Date->year}" data-month="{$Date->month}">
+		<table class="appearance-none w-full">
+			{snippet days}
+				<tbody class="days">
+					{var $firstDay = strtotime("$Date->year-$Date->month-1")}
+					{var $startOffset = date("N", $firstDay)}
+					{var $rows = ceil(($Date->daysInMonth + $startOffset - 1) / 7)}
+					{var $numberOfDays = $rows * 7}
+					{var $weekDay = 1}
+
+					{var $day = 1}
+					{var $nextMonthDay = 1}
+					{for $i = 1; $i <= $numberOfDays; $i++}
+						{var $timestamp = strtotime("$Date->year-$Date->month-$day")}
+						{var $dayDate = date("Y-m-d", $timestamp)}
+						{var $dayLabel = $day . "."}
+						{var $dateLabel = date("j.n.Y", $timestamp)}
+
+						{if $weekDay == 1}
+							<tr>
+						{/if}
+
+						{var $class = "day"}
+						{do $class .= ($timestamp == $Date->tTimestamp) ? " today"}
+						{do $class .= ($weekDay >= 6) ? " weekend"}
+
+						{var $holiday = $control->isHoliday($dayDate)}
+						{if $holiday}
+							{do $class .= " holiday"}
+							{var $holidayStr = implode("<br>", $holiday)}
+							{var $dataToggle = "tooltip"}
+						{else}
+							{var $dataToggle}
+							{var $holidayStr}
+						{/if}
+
+						{if $i >= $startOffset && $day <= $Date->daysInMonth}
+							{if $dayCallback}
+								<td class="curr-month {$class}" n:attr="data-toggle => $dataToggle, title => $holidayStr">
+									{$control->callDayCallback($dayDate)}
+								</td>
+							{else}
+								{var $events = $control->getDayEvents($dayDate)}
+								{var $dayTooltipArr = $events ? array_map(fn($event) => $event->label, $events) : null}
+								{var $dayTooltip = $dayTooltipArr ? implode('<br>', $dayTooltipArr) : null}
+
+								<td class="curr-month {$class}"
+									n:attr="data-tooltip => $dayTooltip, title => $holidayStr"
+								>
+									{include day, day => $day, date => $dayDate, dayLabel => $dayLabel, dateLabel => $dateLabel}
+								</td>
+							{/if}
+							{php $day++}
+						{elseif $i < $startOffset}
+							{var $prevMonthDay = $Date->daysInPrevMonth - $startOffset + $i + 1}
+							<td class="diff-month {$class}">{$prevMonthDay}.</td>
+						{else}
+							<td class="diff-month {$class}">{$nextMonthDay}.</td>
+							{php $nextMonthDay++}
+						{/if}
+
+						{if $weekDay == 7}
+							</tr>
+							{var $weekDay = 1}
+						{else}
+							{php $weekDay++}
+						{/if}
+					{/for}
+
+				</tbody>
+			{/snippet}
+		</table>
+	</div>
+</div>

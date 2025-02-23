@@ -1,0 +1,30 @@
+{varType array $images}
+
+<div class="gallery-component relative py-32px bg-grey select-none overflow-hidden">
+    <div class="swiper">
+        <div class="swiper-wrapper">
+            <div n:foreach="$images as $image"
+                class="swiper-slide aspect-1/1 text-white"
+            >
+                <div class="relative size-full">
+                    <img srcset="{$image|srcset}" alt="" class="absolute-fit object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        {var $btnClass = 'absolute z-10 transform-center top-1/2 text-white size-32px bg-black/50 rounded-full p-8px flex items-center justify-center opacity-80 hover:opacity-100 cursor-pointer transition-all'}
+
+        <div n:class="$btnClass, 'button-prev left-32px'">
+            <div class="rotate-[90deg]">
+                {include .Icon key: 'caret'}
+            </div>
+        </div>
+        <div n:class="$btnClass, 'button-next right-0'">
+            <div class="rotate-[-90deg]">
+                {include .Icon key: 'caret'}
+            </div>
+        </div>
+    </div>
+</div>

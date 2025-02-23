@@ -1,0 +1,18 @@
+{block content}
+<section class="container-desktop pb-32px pt-[60px]">
+    {include .OrgsMap data: $mapData}
+</section>
+<section>
+    <div class="container-desktop">
+        <div class="grid tablet:grid-cols-2 lg-tablet:grid-cols-4 gap-24px py-32px">
+            {foreach $orgs as $org}
+                {include .ArticleBox
+                    variant: App\Templates\Types\Variant::SECONDARY,
+                    size: App\Templates\Types\Size::SM,
+                    type: 'org',
+                    item: $org
+                }
+            {/foreach}
+        </div>
+    </div>
+</section>

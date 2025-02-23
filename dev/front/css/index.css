@@ -1,0 +1,65 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import "layout.scss";
+
+
+@layer base {
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+@layer components {
+    .position-top-left {
+        @apply top-0 left-0;
+    }
+
+    .transform-center {
+        @apply -translate-x-1/2 -translate-y-1/2;
+    }
+    .absolute-center {
+        @apply absolute transform-center top-1/2 left-1/2;
+    }
+    .absolute-fit {
+        @apply absolute top-0 left-0 w-full h-full;
+    }
+    .fixed-fit {
+        @apply fixed top-0 left-0 w-screen h-screen;
+    }
+    .fixed-center {
+        @apply fixed transform-center top-1/2 left-1/2;
+    }
+    .size-full {
+        @apply w-full h-full;
+    }
+    .img-cover {
+        @apply absolute-fit object-cover;
+    }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+input:-internal-autofill-selected {
+    transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s;
+    background-color: white !important;
+    color: black !important;
+}
+
+
+::-webkit-scrollbar {
+    @apply size-4px;
+}
+::-webkit-scrollbar-track {
+    @apply bg-green-dark/20;
+}
+::-webkit-scrollbar-thumb {
+    @apply bg-green-dark/50;
+}
+::-webkit-scrollbar-thumb:hover {
+    @apply cursor-pointer bg-green-dark/80;
+}

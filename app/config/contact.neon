@@ -1,0 +1,12 @@
+parameters:
+    contact:
+        email: 'info@montyit.cz'
+        phone: ''
+        title: 'Ekovýchova LK'
+        name: 'Ekovýchova LK'
+        street: 'Vlkova 4'
+        city: 'Praha'
+        postCode: '130 00'
+        country: 'Czech republic'
+        crn: ''
+        vatId: ''

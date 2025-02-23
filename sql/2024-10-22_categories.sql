@@ -1,0 +1,8 @@
+UPDATE `article_category` SET `text` = 'Vzdělávací materiály, publikace a pomůcky, které můžete využít při vlastní vzdělávací činnosti. Přístup a pravidla využití si určuje každý poskytovatel.' WHERE `id` = '1';
+UPDATE `article_category` SET `text` = 'Příklady dobré praxe hodné následování a inspirace pro vaše vlastní projekty. Podívejte se, jak si se vzdělávacími výzvami poradili ostatní.' WHERE `id` = '2';
+UPDATE `article_category` SET `text` = 'Nabídka seminářů, exkurzí a dalších vzdělávacích akcí pro dospělé a rodiny s dětmi.' WHERE `id` = '3';
+UPDATE `article_category` SET `text` = 'Akce pro dobrovolníky, možnosti přímé účasti na ochraně životního prostředí, témata pro zpracování studentských prací a podobné nabídky organizací zabývajících se environmentálním vzděláváním.' WHERE `id` = '4';
+UPDATE `article_category` SET `text` = 'Hledáte, jak snížit svůj dopad na životní prostředí? Zde najdete rozcestník.' WHERE `id` = '6';
+UPDATE `article_category` SET `text` = 'Evaluace vzdělávacích programů a informace, týkající se kvality poskytovaných vzdělávacích služeb.' WHERE `id` = '7';
+UPDATE `article_category` SET `text` = 'Koncepce environmentální výchovy Libereckého kraje a Akční plán EVVO jsou klíčovými dokumenty. Základní informace a zprávy o jejich plnění najdete zde stejně jako odkazy na další související koncepční materiály.' WHERE `id` = '8';
+UPDATE `article_category` SET `text` = 'Celostátní programy MRKEV a MRKVIČKA propojují školy (MRKEV) a mateřské školy (MRKVIČKA) se zájmem o environmentální výchovu. Program MRKEV v Libereckém kraji koordinuje SEV DIVIZNA, MRKVIČKU koordinuje STŘEVLIK.' WHERE `id` = '9';

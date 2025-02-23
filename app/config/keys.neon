@@ -1,0 +1,7 @@
+parameters:
+    keys:
+        fbToken: EAAH9koJK9toBO2KQipEtNlhIwuqzS5zFpS0GzbnNR98JeGaArjtyioZCZAqqxvgOU6G8LaSJtPXA8D5EAmKk4841zQFif7H8ZABIObhVRNaPB25hlELXmhZA74IXAUY1PHL8DxLcgSDtZC0tfCIsdnTrSEOxUD7HqBTCgcZCeQOpJT96rgZBBRg5yztnWxd9gZDZD
+        gtm: '' #for all tracking scripts use Google Tag Manager
+        recaptcha:
+            public: '6LcUjBAaAAAAAPe2YD-C1dLRN4rs9cop1C45TsqM' # only to use on visu-cms
+            secret: '6LcUjBAaAAAAAMfLkgBhWhhM_xrTouqx6waNro-U' # only to use on visu-cms
