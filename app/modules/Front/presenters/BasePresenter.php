@@ -80,7 +80,7 @@ class BasePresenter extends \App\BaseModule\Presenters\BasePresenter
 
     public function isCategory(string $slug): bool
     {
-        return !in_array($slug, ['articles', 'calendar']);
+        return !in_array($slug, ['articles', 'logos']);
     }
 
     public function handleGetArticleData()

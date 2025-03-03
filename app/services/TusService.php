@@ -45,7 +45,10 @@ class TusService
             },
             []
         );
-        return $files[$inputId] ?: [];
+
+		bdump($files);
+
+        return $files[$inputId] ?? [];
     }
 
     public function getFilePath(string $fileName): string

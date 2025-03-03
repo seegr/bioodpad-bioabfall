@@ -5,29 +5,17 @@ declare(strict_types=1);
 namespace App\AdminModule\Presenters;
 
 use App\AdminModule\Factories\DynamicFormFactory;
-use App\AdminModule\Factories\FileManagerFactory;
-use App\AdminModule\Factories\TagManagerFactory;
 use App\Components\DataGrid;
 use App\Components\DynamicForm;
-use App\Components\FileManager;
-use App\Components\TagManager;
 use App\Model\ArticleRepository;
-use App\Model\FileRepository;
 use App\Model\OrganizationRepository;
 use App\Model\TagRepository;
 use App\Model\UserRepository;
 use App\Model\Utils;
 use App\Services\FileStorage;
-use App\Services\ImageService;
-use App\Services\LocaleService;
-use App\Services\PageValidator;
-use App\Services\TusService;
 use Exception;
 use Nette\Application\BadRequestException;
 use Nette\Database\Table\ActiveRow;
-use Nette\Forms\Container;
-use Nette\Forms\Controls\TextArea;
-use Nette\Forms\Controls\TextInput;
 use Nette\Utils\DateTime;
 use Nette\Utils\Html;
 
@@ -87,32 +75,6 @@ final class ArticlePresenter extends BasePresenter
         $this->redirect('default');
     }
 
-	public function actionValidateArticles()
-	{
-		$validator = new PageValidator();
-
-		$articles = $this->articleRepository->findArticles();
-		bdump($articles->fetchAll());
-
-		$counter = 0;
-		foreach ($articles as $article) {
-			if ($url = $article->{ArticleRepository::COLUMN_PRIMARY_LINK}) {
-				bdump($url);
-				$isValid = $validator->validate($url);
-				bdump($isValid, $url);
-
-				$article->update([ArticleRepository::COLUMN_PRIMARY_VALID => $isValid]);
-
-				if (!$isValid) {
-					$counter++;
-				}
-			}
-		}
-
-		$this->flashMessage("Počet neplatnych zdrojů/odkazů: {$counter}", 'warning');
-		$this->redirect('default');
-	}
-
     public function handleSortArticles(?string $idList)
     {
         $this->articleRepository->updateArticleSort(explode(",", $idList));
@@ -129,20 +91,6 @@ final class ArticlePresenter extends BasePresenter
 
         $grid = new DataGrid;
         $grid->setDataSource($articles);
-		$grid->addColumnText(ArticleRepository::COLUMN_PRIMARY_VALID, '')
-			->setRenderer(function($i) {
-				$el = Html::el('div');
-
-				if (!$i->{ArticleRepository::COLUMN_PRIMARY_VALID}) {
-					$el->setAttribute('uk-icon', 'warning');
-					$el->setAttribute('style', 'width: 24px; color: orange');
-					$el->setAttribute('uk-tooltip', 'Neplatny zdroj/odkaz');
-
-					return $el;
-				}
-
-				return null;
-		});
         $grid->addColumnLink(ArticleRepository::COLUMN_PRIMARY_TITLE, 'Titulek', 'edit');
         $grid->addFilterText(ArticleRepository::COLUMN_PRIMARY_TITLE, 'Titulek');
         $grid->addColumnText('image', '')
@@ -202,14 +150,11 @@ final class ArticlePresenter extends BasePresenter
               $form->addMultiSelect(self::FIELD_CATEGORIES, 'Kategorie', $this->articleRepository->getCategoryInputOptions())
                 ->setRequired('Vyber alespoň jednu kategorii');
               $form->addMultiSelect(self::FIELD_TAGS, 'Tagy', $this->tagRepository->getInputOptions());
+			  $form->addFileUpload('images', 'Galerie', true);
               $form->addText(ArticleRepository::COLUMN_PRIMARY_DATE_START, 'Publikovat od')
                   ->setHtmlAttribute('class', 'js-date');
               $form->addText(ArticleRepository::COLUMN_PRIMARY_DATE_END, 'Publikovat do')
                   ->setHtmlAttribute('class', 'js-date');
-              $form->addText(ArticleRepository::COLUMN_PRIMARY_LINK, 'URL Odkaz')
-                ->setHtmlType('url')
-                ->setOption('description', 'Odkaz musí být ve formátu https://...')
-                ->setRequired();
               $form->addCheckbox(ArticleRepository::COLUMN_PRIMARY_IS_VISIBLE, 'Je článek viditelný?')
                   ->setDefaultValue(true);
           },

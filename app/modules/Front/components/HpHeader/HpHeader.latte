@@ -6,13 +6,10 @@
     {include .HeroImage}
 
     {var $roundedClass = 'overflow-hidden rounded'}
-    <div class="container-desktop h-full font-secondary text-white pt-[60px] pb-32px">
-        <div class="grid grid-cols-1 tablet:grid-cols-3 lg-tablet:grid-cols-4 auto-rows-fr gap-24px h-[calc(100%-60px-12px)] pt-24px">
-            {foreach $items as $slug => $title}
-                {if $slug === 'empty'}
-                    <div class="hidden lg-tablet:block"></div>
-                    {continueIf $slug === 'empty'}
-                {/if}
+
+    <div class="container-desktop h-full font-secondary pt-[120px] pb-32px">
+        <div class="grid grid-cols-1 lg-tablet:grid-cols-4 auto-rows-fr gap-24px h-[calc(100%-60px-12px)] pt-24px">
+            {foreach $items as $slug => $category}
                 <div n:class="
                         'box-item',
                         in_array($slug, ['articles', 'calendar']) ? 'aspect-4/3' : 'aspect-4/3'
@@ -21,29 +18,26 @@
                     <a n:class="
                         'relative h-full flex justify-center rounded p-12px transition-all select-none group',
                         $slug !== 'calendar' ? 'items-center',
-                        isset($categoryText[$slug]) ? 'flip-card duration-500' : 'hover:scale-[1.05] hover:drop-shadow-md'
+                        isset($category->text) ? 'flip-card duration-500' : 'hover:scale-[1.05] hover:drop-shadow-md'
                     "
                             n:attr="[
                                 href: $control->isCategory($slug) ? $control->link('Category:articles', $slug) : null
                             ]"
                             n:tag="$control->isCategory($slug) ? 'a' : 'div'"
                     >
-                        <div n:class="
-                            $roundedClass, 'absolute-fit z-20 transition-all pointer-events-none',
-                            $control->isCategory($slug) ?
-                            ($slug === 'organizace' ? 'bg-green-dark-gradient opacity-0' : 'bg-green-gradient opacity-40 group-hover:opacity-0') :
-                            'bg-brown-gradient hover:bg-brown-dark/90'"></div>
-
                         {switch $slug}
                             {case 'articles'}
-                            <div n:class="$roundedClass, 'relative z-20 w-full h-full'">
-                                <div class="text-18px pb-6px text-white text-center h-[25%]">Nejnovější příspěvky</div>
-                                <div class="h-[75%] overflow-y-auto">
-                                    <div class="pr-6px">
-                                        {include .ArticleListBox items: $articleList}
+                                <div n:class="$roundedClass, 'relative z-20 w-full h-full'">
+                                    <div class="h-[25%] text-18px pb-6px text-center">
+                                        <div>Nejnovější příspěvky</div>
+                                        <div>Letzte Posten</div>
+                                    </div>
+                                    <div class="h-[75%] overflow-y-auto">
+                                        <div class="pr-6px">
+                                            {include .ArticleListBox items: $articleList}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                         {case 'calendar'}
                             <div n:class="$roundedClass, 'relative z-20 w-full'">
                                 <a
@@ -53,34 +47,52 @@
                                 {control calendarBox}
                             </div>
                         {default}
+                            {var $bgImg = "hero-$slug." . ($slug === 'logos' ? 'png' : 'jpg') }
+
                             <div n:class="$roundedClass, front-card">
                                 <img
-                                    src="{$basePath}/dist/front/images/{$slug}.webp"
-                                    alt="{$title}"
+                                    srcset="{("static/$bgImg"|srcset)})"
+                                    alt="{$category->title}"
                                     n:class="
-                                        'absolute-fit z-10 pointer-events-none',
-                                        $slug === 'organizace' ? 'object-contain' : 'object-cover'
+                                        'absolute-fit pointer-events-none',
+                                        $slug === 'logos' ? 'object-contain z-20' : 'object-cover z-[-1]',
                                     "
                                 >
-                                <div class="relative flex h-full items-center justify-center px-12px">
-                                    <div class="relative z-20 text-[20px] text-center bg-green-dark rounded px-12px py-2px transition-all">
-                                        {$title}
+                                <div
+                                    n:ifset="$category->text"
+                                    n:class="
+                                        $roundedClass, 'absolute-fit transition-all pointer-events-none z-0',
+                                        'bg-orange-gradient opacity-40'
+                                    "
+                                ></div>
+                                <div n:if="$slug !== 'logos'" class="relative z-10 flex h-full items-center justify-center px-12px">
+                                    <div class="relative z-20 text-[18px] text-center text-brown-lighter bg-brown-darker rounded px-12px py-2px transition-all">
+                                        <div>{$category->title}</div>
+                                        <div>{$category->title_de}</div>
                                     </div>
                                 </div>
                             </div>
                         {/switch}
 
-                        <div n:ifset="$categoryText[$slug]"
-                            n:class="$roundedClass, 'back-card py-12px px-24px text-14px bg-green-darker/90'"
+                        <div n:ifset="$category->text"
+                            n:class="$roundedClass, 'back-card text-white py-12px px-24px text-14px bg-orange-dark'"
                         >
                             <div class="flex h-full overflow-y-auto">
                                 <div class="m-auto max-h-full overflow-y-auto p-4">
-                                    {$categoryText[$slug]}
+                                    {$category->text|noescape}
                                 </div>
                             </div>
                         </div>
+
+                        <div n:class="
+                            $roundedClass, 'absolute-fit transition-all pointer-events-none z-[-1]',
+                            isset($category->text) ? 'bg-brown-darkest opacity-40 group-hover:opacity-80' : 'bg-brown-lighter opacity-70'
+                        "></div>
                     </a>
                 </div>
+                {if $iterator->counter === 4}
+                    <div class="hidden lg-tablet:block"></div>
+                {/if}
             {/foreach}
         </div>
     </div>

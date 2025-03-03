@@ -1,22 +1,15 @@
-<nav class="fixed z-[100] w-full h-[60px] text-18px backdrop-blur drop-shadow-md transition-all"
-     :class="pageScrolled ? 'bg-green/90 text-white' : 'bg-green-dark text-white'"
+<nav class="fixed z-[100] w-full text-18px backdrop-blur drop-shadow-lg transition-all"
+     :class="pageScrolled ? 'bg-brown-darkest/80 text-white' : 'bg-brown-darkest/40 text-white'"
 >
-    <div class="container-desktop flex h-full justify-between items-center py-12px font-secondary">
-        <a n:href="Homepage:default" class="flex items-center gap-x-24px group">
+    <div class="container-desktop flex h-full justify-end items-center font-secondary">
+        <a n:href="Homepage:default" class="flex items-center gap-x-24px group py-12px">
             <div>
                 <img
-                    src="dist/front/images/logo.png"
+                    srcset="{('static/logo-header.png'|srcset)}"
                     alt="Logo"
-                    class="block h-[40px]"
+                    class="block h-[70px]"
                 >
             </div>
-            <span class="group-hover:text-black/80 transition-all">Ekovýchova Libereckého kraje</span>
-        </a>
-        <a class="block size-24px hover:text-green-darker transition-all"
-           href="https://www.facebook.com/ekovychovalk"
-           target="_blank"
-        >
-            {include .Icon key: 'facebook'}
         </a>
     </div>
 </nav>

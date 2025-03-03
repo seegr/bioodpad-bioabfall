@@ -1,22 +1,9 @@
 <footer>
-    <div class="bg-grey-light text-white text-14px leading-[200%]">
-        {var $linkClass = 'underline decoration-white/50 hover:text-white/80 transition'}
-
-        <div class="container-desktop py-64px">
+    <div class="bg-brown-lightest text-white text-14px leading-[200%]">
+        <div class="container-desktop py-24px">
             <div class="flex flex-wrap w-full justify-between items-center">
-                <div class="flex-none w-full tablet:w-auto">
-                    <img src="dist/front/images/logo-white.png" />
-                </div>
-                <div class="pt-32px tablet:pt-0">
-                    Krajský úřad Libereckého kraje<br>
-                    Rezort životního prostředí a zemědělství<br>
-                    U Jezu 642/2a, 461 80 Liberec 2<br>
-                    <a
-                            n:class="$linkClass"
-                            href="mailto: info@ekovychovalk.cz"
-                    >
-                        info@ekovychovalk.cz
-                    </a>
+                <div class="flex-none w-[150px]">
+                    <img srcset="{('static/logo.png'|srcset)}" />
                 </div>
             </div>
         </div>

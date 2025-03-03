@@ -5,14 +5,14 @@
 <div class="article-list-box-component max-h-full overflow-y-auto">
     <div n:foreach="$items as $article">
         <div class="flex justify-between">
-            <div class="text-14px cursor-pointer hover:text-white/80"
+            <div class="text-14px cursor-pointer hover:text-black/80"
                  data-item-modal-id="{$article->id}"
                  data-item-modal-type="article"
             >
                 {$article->title}
             </div>
 
-            <div class="text-12px text-white/60">
+            <div class="text-12px">
                 {$article->date_created|date, App\Services\LocaleService::DATE_FORMAT}
             </div>
         </div>

@@ -33,12 +33,19 @@ const customColors = {
     darker: "#2f3a1f",
   },
   brown: {
-    DEFAULT: "#B99470",
-    light: "#d7cfc1",
-    dark: "#7b5937",
+    DEFAULT: "#7b5937",
+    light: "#9f7a56",
+    lighter: "#eacec2",
+    lightest: "#fff8f3",
+    dark: "#5d3c21",
+    darker: "#3d2613",
+    darkest: "#281b0e"
   },
   orange: {
-    DEFAULT: "#c48354"
+    DEFAULT: "#F39A14",
+    light: "#e0b176",
+    dark: "#c0790d",
+    darker: "#9d640c",
   },
   grey: {
     DEFAULT: "#1b1b1b",
@@ -109,7 +116,7 @@ module.exports = {
       backgroundImage: {
         'green-gradient': 'linear-gradient(0deg, #708a3a 0%, #708a3a60 100%)',
         'green-dark-gradient': 'linear-gradient(0deg, #5c723e 0%, #5c723e60 100%)',
-        'brown-gradient': 'linear-gradient(0deg, #7b5937 70%, #7b593760 100%)'
+        'orange-gradient': 'linear-gradient(0deg, #9d640c 70%, #e0b17600 100%)'
       }
     },
     borderRadius,

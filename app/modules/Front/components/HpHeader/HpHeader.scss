@@ -22,6 +22,10 @@
       }
       .back-card {
         transform: rotateY(180deg);
+
+        .separator {
+          @apply py-6px;
+        }
       }
 
       .front-card,

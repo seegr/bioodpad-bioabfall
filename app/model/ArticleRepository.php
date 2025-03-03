@@ -31,7 +31,8 @@ class ArticleRepository
         COLUMN_PRIMARY_DATE_UPDATED = 'date_updated',
         COLUMN_PRIMARY_DATE_START = 'date_start',
         COLUMN_PRIMARY_DATE_END = 'date_end',
-	    COLUMN_PRIMARY_VALID = 'valid',
+
+	    PRIMARY_IMAGES = 'images',
 
         TABLE_CATEGORY = 'article_category',
         COLUMM_CATEGORY_ID = 'id',
@@ -103,7 +104,7 @@ class ArticleRepository
     {
         $today = new DateTime();
 
-        return $this->findValidArticles()
+        return $this->findVisibleArticles()
             ->where('
                 (date_start IS NULL OR date_start <= ?) 
                 AND (date_end IS NULL OR date_end >= ?)',
@@ -122,7 +123,7 @@ class ArticleRepository
         int $offset = null,
     ): Selection
     {
-        $sel = $this->findValidArticles()
+        $sel = $this->findVisibleArticles()
             ->select("
                 article.*
             ")
@@ -168,6 +169,10 @@ class ArticleRepository
 
     public function upsertArticle(array $values, ?array $categories = null, ?array $tags = null, ?array $files = null): int
     {
+	    [$values, $images] = Utils::extractValues($values, self::PRIMARY_IMAGES);
+		bdump($values);
+		bdump($images);
+
         $values[self::COLUMN_PRIMARY_IMAGE] = empty($values[self::COLUMN_PRIMARY_IMAGE]) ? null : $values[self::COLUMN_PRIMARY_IMAGE];
         $values[self::COLUMN_PRIMARY_IMAGE_THUMB] = empty($values[self::COLUMN_PRIMARY_IMAGE_THUMB]) ? null : $values[self::COLUMN_PRIMARY_IMAGE_THUMB];
         $values[self::COLUMN_PRIMARY_PEREX] = empty($values[self::COLUMN_PRIMARY_PEREX]) ? null : $values[self::COLUMN_PRIMARY_PEREX];
@@ -181,10 +186,6 @@ class ArticleRepository
             $values[$col] = !empty($values[$col]) ? new DateTime($values[$col]) : null;
         }
 
-		$link = $values[self::COLUMN_PRIMARY_LINK];
-		$validator = new PageValidator();
-		$values[self::COLUMN_PRIMARY_VALID] = $link ? $validator->validate($link) : true;
-
         if ($id = $values[self::COLUMN_PRIMARY_ID]) {
             $this->findArticleById($id)->update($values);
             $this->findArticleFiles()->where(self::COLUMN_FILE_PARENT, $id)->delete();
@@ -192,17 +193,21 @@ class ArticleRepository
             $this->createArticleCategories($id, $categories);
             $this->findArticleTags()->where(self::COLUMN_TAG_PARENT, $id)->delete();
             $this->createArticleTags($id, $tags);
-
-            return $id;
         } else {
-            unset($values[self::COLUMN_PRIMARY_ID]);
+			bdump($values);
+			unset($values[self::COLUMN_PRIMARY_ID]);
+
             $values[self::COLUMN_PRIMARY_USER_ID] = $this->user->getId();
             $row = $this->findArticles()->insert($values);
             $this->createArticleCategories($row->id, $categories);
             $this->createArticleTags($row->id, $tags);
 
-            return $row->id;
+            $id = $row->id;
         }
+
+	    $this->createArticleFiles($id, $files);
+
+		return $id;
     }
 
     private function createArticleFiles(int $articleId, array $fileIds): void
@@ -280,7 +285,7 @@ class ArticleRepository
     public function getCategories(): array
     {
         return $this->findCategories()
-            ->fetchPairs(self::COLUMM_CATEGORY_SLUG, self::COLUMN_CATEOGRY_TITLE);
+            ->fetchAssoc('slug->');
     }
 
     public function getCategoryBySlug(string $slug): ?ActiveRow
@@ -290,10 +295,9 @@ class ArticleRepository
             ->fetch();
     }
 
-	public function findValidArticles(): Selection
+	public function findVisibleArticles(): Selection
 	{
 		return $this->findArticles()
-			->where(self::COLUMN_PRIMARY_VALID, true)
 			->where(self::COLUMN_PRIMARY_IS_VISIBLE, true);
 	}
 

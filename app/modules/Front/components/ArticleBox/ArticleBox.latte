@@ -5,8 +5,6 @@
 {default $type = 'article'}
 {default $categories = false}
 
-{var $linkClass = 'text-green-dark hover:text-black transition'}
-
 {if $type === 'article' && $item->org}
     {var $org = $item->ref('org')}
     {var $orgLogo = $org->logo}
@@ -68,7 +66,7 @@
                         href: $type === 'event' ? $item->link : null,
                         target: $type === 'event' ? '_blank' : null
                     "
-                    n:class="text-green-dark, 'font-bold'"
+                    n:class="text-brown-dark, 'font-bold'"
                     {if $type !== 'event'}
                         data-item-modal-id="{$item->id}"
                         data-item-modal-type="{$type}"

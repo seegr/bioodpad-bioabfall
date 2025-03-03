@@ -37,6 +37,7 @@ class Authorizator
         $acl->addResource(self::RESOURCE_ARTICLE);
         $acl->addResource(self::RESOURCE_USER);
         $acl->addResource(self::RESOURCE_TAG);
+        $acl->addResource(self::RESOURCE_FILE);
         $acl->addResource(self::RESOURCE_ERROR);
 
         // rules
