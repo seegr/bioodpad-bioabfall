@@ -276,6 +276,11 @@ class DynamicForm extends Control
         return $this->form->addUpload($name, $label);
     }
 
+	public function addMultipleUpload(string $name, string $label): UploadControl
+	{
+		return $this->form->addMultiUpload($name, $label);
+	}
+
     public function addEmail(string $name, string $label): TextInput
     {
         return $this->form->addEmail($name, $label);
@@ -331,7 +336,8 @@ class DynamicForm extends Control
         bool $isMultiple = false,
         string $uploadDestination = 'File:uploadFile',
         string $adapter = Uppy::ADAPTER_TUS,
-        Container $container = null
+        Container $container = null,
+
     ): UppyControl {
         $control = new UppyControl($this->presenter, $label, $isMultiple, $adapter);
         if ($container) {

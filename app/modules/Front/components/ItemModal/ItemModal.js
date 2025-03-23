@@ -20,10 +20,6 @@ export default function initItemModal() {
     btn.addEventListener('click', () => {
       const type = btn.dataset.itemModalType
       const id = btn.dataset.itemModalId
-      console.log('type', type)
-      console.log('id', id)
-
-      console.log('fetchUrl', fetchUrl)
 
       fetch(`${fetchUrl}&type=${type}&itemId=${id}`, { method: "GET" })
         .then(res => {
@@ -36,14 +32,16 @@ export default function initItemModal() {
           modal.querySelector('.item-title').textContent = data.title
           modal.querySelector('.item-text').innerHTML = data.text
           const imageWrap = modal.querySelector('.item-image')
+          const galleryWrap = modal.querySelector('.item-gallery')
+          const filesWrap = modal.querySelector('.item-files')
 
           imageWrap.innerHTML = ''
+          galleryWrap.innerHTML = ''
+          filesWrap.innerHTML = ''
 
           const articleImgClass = ["aspect-[3/1]"]
           const orgImgClass = ["block", 'mx-auto', 'py-24px', 'max-h-[200px]', 'pt-48px']
           imageWrap.classList.remove(...articleImgClass, ...orgImgClass)
-
-          console.log(data)
 
           if (data.image) {
             const baseUrl = modal.dataset.baseUrl
@@ -65,6 +63,37 @@ export default function initItemModal() {
             imageWrap.classList.remove('hidden')
           } else {
             imageWrap.classList.add('hidden')
+          }
+
+          if (data.gallery) {
+            Object.values(data.gallery).forEach((src)=> {
+              const imageEl = document.createElement('img')
+
+              imageEl.srcset = src
+
+              galleryWrap.appendChild(imageEl)
+            })
+
+            galleryWrap.classList.remove('hidden')
+          } else {
+            galleryWrap.classList.add('hidden')
+          }
+
+          if (data.files) {
+            Object.values(data.files).forEach((data)=> {
+              const fileEl = document.createElement('a')
+              fileEl.classList.add('block', 'text-green-dark', 'hover:text-black')
+
+              fileEl.href = data.src
+              fileEl.target = '_blank'
+              fileEl.innerText = data.name
+
+              filesWrap.appendChild(fileEl)
+            })
+
+            filesWrap.classList.remove('hidden')
+          } else {
+            filesWrap.classList.add('hidden')
           }
 
           const itemLink = modal.querySelector('.item-link')

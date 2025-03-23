@@ -1,5 +1,6 @@
 import "./imports/polyfills.js"
 import tippy from 'tippy.js';
+import naja from 'naja';
 import 'tippy.js/dist/tippy.css';
 import UIkit from "uikit/dist/js/uikit.js"
 import UIkitIcons from "uikit/dist/js/uikit-icons.js"
@@ -13,6 +14,7 @@ window.requestSnippets = requestSnippets
 UIkit.use(UIkitIcons)
 
 document.addEventListener(`DOMContentLoaded`, () => {
+  naja.initialize();
   insertNetteFormsScript()
   initTooltip()
   initAll().then(() => {

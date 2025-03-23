@@ -7,7 +7,9 @@ namespace App\AdminModule\Presenters;
 use App\AdminModule\Factories\DynamicFormFactory;
 use App\Components\DataGrid;
 use App\Components\DynamicForm;
+use App\Components\Uppy;
 use App\Model\ArticleRepository;
+use App\Model\FileRepository;
 use App\Model\OrganizationRepository;
 use App\Model\TagRepository;
 use App\Model\UserRepository;
@@ -16,6 +18,7 @@ use App\Services\FileStorage;
 use Exception;
 use Nette\Application\BadRequestException;
 use Nette\Database\Table\ActiveRow;
+use Nette\Forms\Form;
 use Nette\Utils\DateTime;
 use Nette\Utils\Html;
 
@@ -24,6 +27,7 @@ final class ArticlePresenter extends BasePresenter
     const FIELD_FILES = 'files';
     const FIELD_CATEGORIES = 'categories';
     const FIELD_TAGS = 'tags';
+    const FIELD_IMAGES = 'images';
     const FIELD_VIDEO = 'video';
     const GRID_COL_ORG = 'org';
 
@@ -35,6 +39,7 @@ final class ArticlePresenter extends BasePresenter
         private UserRepository $userRepository,
         private OrganizationRepository $organizationRepository,
         private FileStorage $fileStorage,
+		private FileRepository $fileRepository,
         private TagRepository $tagRepository,
         private DynamicFormFactory $dynamicFormFactory
     ) {
@@ -45,10 +50,17 @@ final class ArticlePresenter extends BasePresenter
     public function actionEdit(?int $id = null)
     {
         $this->record = empty($id) ? null : $this->articleRepository->findArticleById($id)->fetch();
+
         if ($id && !$this->record) {
             throw new BadRequestException('Záznam neexistuje');
         }
     }
+
+	public function renderEdit(?int $id): void
+	{
+		$this->template->gallery = $this->record ? $this->articleRepository->findArticleGallery($id)->fetchAll() : null;
+		$this->template->files = $this->record ? $this->articleRepository->findArticleFiles($id)->fetchAll() : null;
+	}
 
     public function actionShow(int $id): void
     {
@@ -150,11 +162,14 @@ final class ArticlePresenter extends BasePresenter
               $form->addMultiSelect(self::FIELD_CATEGORIES, 'Kategorie', $this->articleRepository->getCategoryInputOptions())
                 ->setRequired('Vyber alespoň jednu kategorii');
               $form->addMultiSelect(self::FIELD_TAGS, 'Tagy', $this->tagRepository->getInputOptions());
-			  $form->addFileUpload('images', 'Galerie', true);
               $form->addText(ArticleRepository::COLUMN_PRIMARY_DATE_START, 'Publikovat od')
                   ->setHtmlAttribute('class', 'js-date');
               $form->addText(ArticleRepository::COLUMN_PRIMARY_DATE_END, 'Publikovat do')
                   ->setHtmlAttribute('class', 'js-date');
+	          $form->addMultipleUpload(ArticleRepository::PRIMARY_IMAGES, 'Galerie')
+		          ->getControlPrototype()
+		          ->setAttribute('accept', 'image/png,image/jpg,image/jpeg');
+	          $form->addMultipleUpload(ArticleRepository::PRIMARY_FILES, 'Dokumenty');
               $form->addCheckbox(ArticleRepository::COLUMN_PRIMARY_IS_VISIBLE, 'Je článek viditelný?')
                   ->setDefaultValue(true);
           },
@@ -163,11 +178,16 @@ final class ArticlePresenter extends BasePresenter
                 $id ? $this->canUpdate() : $this->canCreate();
 
                 [$values] = $this->fileStorage->uploadFormFiles($values);
-                [$values, $categories, $tags, $files] = Utils::extractValues(
-                    $values, self::FIELD_CATEGORIES, self::FIELD_TAGS, self::FIELD_FILES
+                [$values, $categories, $tags, $images, $files] = Utils::extractValues(
+                    $values,
+                    self::FIELD_CATEGORIES,
+                    self::FIELD_TAGS,
+                    self::FIELD_IMAGES,
+	                self::FIELD_FILES
                 );
 
-                $id = $this->articleRepository->upsertArticle($values, $categories, $tags, $files);
+                $id = $this->articleRepository->upsertArticle($values, $categories, $tags, $images, $files);
+
                 $this->flashMessage('Záznam byl úspěšně uložen');
 
                 $this->redirect('edit', $this->record->id ?? $id);
@@ -180,4 +200,17 @@ final class ArticlePresenter extends BasePresenter
                 ] : null
         );
     }
+
+	public function handleDeleteGalleryImage(int $imageId) {
+		$this->articleRepository->deleteGalleryImage($imageId);
+
+		$this->redrawControl('gallery');
+	}
+
+	public function handleDeleteFile(int $fileId) {
+		$this->articleRepository->deleteFile($fileId);
+
+		$this->redrawControl('files');
+	}
+
 }

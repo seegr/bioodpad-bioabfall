@@ -7,6 +7,7 @@ use Nette\Http\FileUpload;
 use Nette\Http\Request as HttpRequest;
 use Nette\Utils\FileSystem;
 use Nette\Utils\Image;
+use Nette\Utils\Strings;
 use Nette\Utils\UnknownImageFileException;
 
 class FileStorage
@@ -38,12 +39,13 @@ class FileStorage
         return $this;
     }
 
-    public function uploadFormFiles(array $values, ?array $uploadGroups = []): array
+    public function uploadFormFiles(array $values, ?array $uploadGroups = [], bool $generateName = false): array
     {
         $uploadGroup = [];
+
         foreach ($values as $key => $value) {
             if ($value instanceof FileUpload) {
-                $id = $this->uploadFileUpload($value);
+                $id = $this->uploadFileUpload($value, $generateName);
                 if ($id) {
                     $values[$key] = $id;
                 } else {
@@ -101,7 +103,7 @@ class FileStorage
         return $this->uploadImage(Image::fromString(base64_decode($data[1])), $key, $extension);
     }
 
-    public function uploadFileUpload(FileUpload $upload): ?string
+    public function uploadFileUpload(FileUpload $upload, bool $generateName = false): ?string
     {
         if (!$this->namespace) {
             throw new \Exception('Namespace has to be specified');
@@ -111,7 +113,7 @@ class FileStorage
         }
         $dirName = $this->wwwDir . '/' . $this->assetDir . '/' . $this->namespace . '/original';
         FileSystem::createDir($dirName);
-        $uniqueName = $this->getRandomName($upload->name);
+        $uniqueName = $generateName ? $this->getRandomName($upload->name) : $this->generateName($upload->name);
         $upload->move($dirName . '/' . $uniqueName);
         return $this->namespace . '/' . $uniqueName;
     }
@@ -217,5 +219,17 @@ class FileStorage
         $ext = '.' . $ext[count($ext) - 1];
         return md5(time() . rand()) . $ext;
     }
+
+	private function generateName(string $fileName): string
+	{
+		$ext = explode('.', $fileName);
+		$nameArr = $ext;
+		unset($nameArr[count($nameArr)]);
+		$name = implode($nameArr);
+
+		$ext = '.' . $ext[count($ext) - 1];
+
+		return Strings::webalize($name) . $ext;
+	}
 }
 

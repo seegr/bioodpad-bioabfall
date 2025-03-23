@@ -47,6 +47,9 @@ const customColors = {
     dark: "#c0790d",
     darker: "#9d640c",
   },
+  red: {
+    DEFAULT: "#f34f14",
+  },
   grey: {
     DEFAULT: "#1b1b1b",
     light: "#333333"

@@ -33,6 +33,7 @@ class ArticleRepository
         COLUMN_PRIMARY_DATE_END = 'date_end',
 
 	    PRIMARY_IMAGES = 'images',
+	    PRIMARY_FILES = 'files',
 
         TABLE_CATEGORY = 'article_category',
         COLUMM_CATEGORY_ID = 'id',
@@ -50,7 +51,18 @@ class ArticleRepository
         TABLE_TAG = 'article_has_tag',
         COLUMN_TAG_PARENT = 'article_id',
         COLUMN_TAG_ID = 'tag_id',
-        IMAGE_NAMESPACE = 'article';
+        IMAGE_NAMESPACE = 'article',
+
+		TABLE_GALLERY = 'article_gallery',
+		COLUMN_GALLERY_ID = 'id',
+		COLUMN_GALLERY_ARTICLE_ID = 'article_id',
+		COLUMN_GALLERY_SOURCE = 'source',
+
+		TABLE_FILES = 'article_files',
+		COLUMN_FILES_ID = 'id',
+		COLUMN_FILES_ARTICLE_ID = 'article_id',
+		COLUMN_FILES_SOURCE = 'source';
+
 
     public function __construct(
         private Explorer $database,
@@ -76,11 +88,6 @@ class ArticleRepository
         );
     }
 
-    public function findArticleFiles(): Selection
-    {
-        return $this->database->table(self::TABLE_FILE);
-    }
-
     public function findArticleTags(): Selection
     {
         return $this->database->table(self::TABLE_TAG);
@@ -99,6 +106,28 @@ class ArticleRepository
 
         return array_unique($tags);
     }
+
+	public function findGallery(): Selection
+	{
+		return $this->database->table(self::TABLE_GALLERY);
+	}
+
+	public function findArticleGallery(int $id): Selection
+	{
+		return $this->findGallery()
+			->where(self::COLUMN_GALLERY_ARTICLE_ID, $id);
+	}
+
+	public function findFiles(): Selection
+	{
+		return $this->database->table(self::TABLE_FILES);
+	}
+
+	public function findArticleFiles(int $id): Selection
+	{
+		return $this->findFiles()
+			->where(self::COLUMN_FILES_ARTICLE_ID, $id);
+	}
 
     public function getLatestArticles(int $limit = null): array
     {
@@ -167,11 +196,15 @@ class ArticleRepository
             ->fetchPairs(self::COLUMN_TAG_ID, self::COLUMN_TAG_ID);
     }
 
-    public function upsertArticle(array $values, ?array $categories = null, ?array $tags = null, ?array $files = null): int
+    public function upsertArticle(
+		array $values,
+		?array $categories = null,
+		?array $tags = null,
+		?array $images = null,
+		?array $files = null
+    ): int
     {
-	    [$values, $images] = Utils::extractValues($values, self::PRIMARY_IMAGES);
-		bdump($values);
-		bdump($images);
+	    [$values] = Utils::extractValues($values);
 
         $values[self::COLUMN_PRIMARY_IMAGE] = empty($values[self::COLUMN_PRIMARY_IMAGE]) ? null : $values[self::COLUMN_PRIMARY_IMAGE];
         $values[self::COLUMN_PRIMARY_IMAGE_THUMB] = empty($values[self::COLUMN_PRIMARY_IMAGE_THUMB]) ? null : $values[self::COLUMN_PRIMARY_IMAGE_THUMB];
@@ -188,13 +221,11 @@ class ArticleRepository
 
         if ($id = $values[self::COLUMN_PRIMARY_ID]) {
             $this->findArticleById($id)->update($values);
-            $this->findArticleFiles()->where(self::COLUMN_FILE_PARENT, $id)->delete();
             $this->findArticleCategories()->where(self::COLUMN_CATEGORY_REL_PARENT, $id)->delete();
             $this->createArticleCategories($id, $categories);
             $this->findArticleTags()->where(self::COLUMN_TAG_PARENT, $id)->delete();
             $this->createArticleTags($id, $tags);
         } else {
-			bdump($values);
 			unset($values[self::COLUMN_PRIMARY_ID]);
 
             $values[self::COLUMN_PRIMARY_USER_ID] = $this->user->getId();
@@ -205,7 +236,14 @@ class ArticleRepository
             $id = $row->id;
         }
 
-	    $this->createArticleFiles($id, $files);
+		$images = array_filter($images);
+	    foreach($images as $source) {
+		    $this->saveArticleGalleryImage($id, $source);
+	    }
+	    $files = array_filter($files);
+	    foreach($files as $source) {
+		    $this->saveArticleFile($id, $source);
+	    }
 
 		return $id;
     }
@@ -299,6 +337,38 @@ class ArticleRepository
 	{
 		return $this->findArticles()
 			->where(self::COLUMN_PRIMARY_IS_VISIBLE, true);
+	}
+
+	public function saveArticleGalleryImage(int $articleId, string $source): void
+	{
+		$this->findGallery()
+			->insert([
+				self::COLUMN_GALLERY_ARTICLE_ID => $articleId,
+				self::COLUMN_GALLERY_SOURCE => $source
+			]);
+	}
+
+	public function saveArticleFile(int $articleId, string $source): void
+	{
+		$this->findFiles()
+			->insert([
+				self::COLUMN_FILES_ARTICLE_ID => $articleId,
+				self::COLUMN_FILES_SOURCE => $source
+			]);
+	}
+
+	public function deleteGalleryImage(int $id): void
+	{
+		$this->findGallery()
+			->wherePrimary($id)
+			->delete();
+	}
+
+	public function deleteFile(int $id): void
+	{
+		$this->findFiles()
+			->wherePrimary($id)
+			->delete();
 	}
 
 }

@@ -3,4 +3,60 @@
 
 {block content}
     {control articleForm}
+
+    {snippet gallery}
+        <div
+                n:if="$gallery"
+                class="mt-32px"
+        >
+            <h2>Galerie</h2>
+            <div class="grid grid-cols-6 gap-6px">
+                <div
+                        n:foreach="$gallery as $id => $image"
+                        class="h-full bg-black"
+                >
+                    <div class="relative h-full flex items-center">
+                        <img
+                                src="{$image->source|image}"
+                                alt="Image - {$id}"
+                                class="block w-full"
+                        >
+                        <a
+                                n:href="deleteGalleryImage! $id"
+                                class="ajax absolute top-4px right-6px bg-red text-white flex items-center justify-center w-[24px] h-[24px] leading-none"
+                                data-naja-history="off"
+                        >×</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {/snippet}
+
+    {snippet files}
+        <div
+            n:if="$files"
+            class="mt-32px"
+        >
+            <h2>Dokumenty</h2>
+            <div
+                n:foreach="$files as $id => $file"
+            >
+                <div class="relative space-y-8px">
+                    <div>
+                        <a
+                            href="{$file->source|file}"
+                            target="_blank"
+                        >
+                            {$file->source}
+                        </a>
+                        <a
+                            n:href="deleteFile! $id"
+                            class="ajax inline-flex items-center justify-center bg-red text-white w-[20px] h-[20px] leading-none"
+                            data-naja-history="off"
+                        >×</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {/snippet}
 {/block}

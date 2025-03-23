@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\FrontModule\Presenters;
 
 use App\Components\FileManager;
+use App\Filter\FileFilter;
 use App\FrontModule\Components\Breadcrumbs;
 use App\FrontModule\Components\ChangeLocale;
 use App\FrontModule\Components\ContactForm;
@@ -30,6 +31,7 @@ class BasePresenter extends \App\BaseModule\Presenters\BasePresenter
     protected ArticleRepository $articleRepository;
     protected OrganizationRepository $organizationRepository;
     protected FileStorage $fileStorage;
+	protected FileFilter $fileFilter;
 
     public function injectRepository(
         ParamService $paramService,
@@ -39,7 +41,8 @@ class BasePresenter extends \App\BaseModule\Presenters\BasePresenter
         ChangeLocaleFactory $changeLocaleFactory,
         ArticleRepository $articleRepository,
         OrganizationRepository $organizationRepository,
-        FileStorage $fileStorage
+        FileStorage $fileStorage,
+        FileFilter $fileFilter,
     ) {
         $this->paramService = $paramService;
         $this->localeService = $localeService;
@@ -49,6 +52,7 @@ class BasePresenter extends \App\BaseModule\Presenters\BasePresenter
         $this->articleRepository = $articleRepository;
         $this->organizationRepository = $organizationRepository;
         $this->fileStorage = $fileStorage;
+        $this->fileFilter = $fileFilter;
     }
 
     protected function beforeRender()
@@ -91,6 +95,8 @@ class BasePresenter extends \App\BaseModule\Presenters\BasePresenter
         if ($type === 'article') {
             $row = $this->articleRepository->findArticleById($itemId)->fetch();
             $image = $row->image;
+			$gallery = $this->articleRepository->findArticleGallery($itemId)->fetchAll();
+			$files = $this->articleRepository->findArticleFiles($itemId)->fetchAll();
         }
 
         if ($type === 'org') {
@@ -98,9 +104,30 @@ class BasePresenter extends \App\BaseModule\Presenters\BasePresenter
             $image = $row->logo;
         }
 
+
         if (isset($row)) {
             $data = $row->toArray();
             $data['image'] = $image ? $this->fileStorage->getRelativeUrl($image) : null;
+
+			if (isset($gallery)) {
+				$data['gallery'] = $gallery ? array_map(
+					fn($image) => $this->fileFilter->srcset($image['source']),
+					$gallery
+				) : null;
+			}
+
+	        if (isset($files)) {
+				$filesArr = [];
+				foreach ($files as $file) {
+					$srcArr = explode('/', $file['source']);
+
+					$filesArr[] = [
+						'name' => end($srcArr),
+						'src' => $this->fileFilter->file($file['source']),
+					];
+				}
+		        $data['files'] = $filesArr;
+	        }
 
             $this->sendJson($data);
         }
